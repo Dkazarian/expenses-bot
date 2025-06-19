@@ -1,4 +1,8 @@
 import axios from 'axios';
+import dotenv from 'dotenv';
+import { config } from '../config.js';
+
+dotenv.config();
 
 type Error =  {
     code: 'Error' | 'NotExpense';
@@ -20,8 +24,8 @@ interface Query {
 export default {
     async sendExpense(message: Query): Promise<Response | null> {
         try {
-            return await axios.post('/api/expenses', message);
-           
+            return await axios.post(`${config.botServiceUrl}/expenses`, message);
+
         } catch (error) {
             console.error('Error:', error);
             return null;            

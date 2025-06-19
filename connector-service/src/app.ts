@@ -1,9 +1,11 @@
 import dotenv from 'dotenv';
 import { config } from './config.js';
-import { createTelegramBot } from './bot.js';
+import TelegramBot from './telegram-bot.js';
+
 
 dotenv.config();
 
-const telegramBot = createTelegramBot(config.botToken);
+const telegramBot = new TelegramBot(config.botToken);
 
 telegramBot.start();
+

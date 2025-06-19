@@ -10,5 +10,6 @@ function requireEnv(name: string): string {
 }
 
 export const config = {
+  botServiceUrl: requireEnv('BOT_SERVICE_URL'),
   botToken: requireEnv('BOT_TOKEN'),
 };
