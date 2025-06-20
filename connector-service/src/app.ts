@@ -9,3 +9,4 @@ const telegramBot = new TelegramBot(config.botToken);
 
 telegramBot.start();
 
+console.log('Bot started');
