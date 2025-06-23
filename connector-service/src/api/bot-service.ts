@@ -5,10 +5,10 @@ import { config } from '../config.js';
 dotenv.config();
 
 
-interface Response {
-    category: string | null;
-    description: string | null;
-    amount: number | null;
+interface ExpenseResponse {
+    category: string;
+    description: string;
+    amount: number;
 }
 
 interface Query {
@@ -16,9 +16,9 @@ interface Query {
     message: string;
 }
 
-const postWithAuthentication = async (url: string, data: Query) => {
+const postWithAuthentication = async<T> (url: string, data: Query) => {
     try {
-        const response = await axios.post<Response>(`${config.botService.url}${url}`, data, {
+        const response = await axios.post<T>(`${config.botService.url}${url}`, data, {
                 headers: {
                     'X-API-Key': config.botService.apiKey,
                 }
@@ -37,6 +37,6 @@ const postWithAuthentication = async (url: string, data: Query) => {
 
 
 export default {
-    sendExpense: (message: Query): Promise<Response | null> =>  
-        postWithAuthentication('/expenses', message),
+    sendExpense: (message: Query): Promise<ExpenseResponse | null> =>  
+        postWithAuthentication<ExpenseResponse | null>('/expenses', message),
 };
