@@ -21,17 +21,18 @@ const postWithAuthentication = async<T> (url: string, data: Query) => {
         const response = await axios.post<T>(`${config.botService.url}${url}`, data, {
                 headers: {
                     'X-API-Key': config.botService.apiKey,
-                }
+                    'Content-Type': 'application/json',
+                },
             });
         return response.data;
     } catch (error: any) {
-        if (isAxiosError(error)) {
+            if (isAxiosError(error)) {
                 console.log('Error', { status: error.status, response: error.response });
             } else {
                 console.log('Error', error);
             }
+            return null;
         }
-        return null;
     };
 
 
