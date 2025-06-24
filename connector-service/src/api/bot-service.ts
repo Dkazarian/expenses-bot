@@ -12,7 +12,7 @@ interface ExpenseResponse {
 }
 
 interface Query {
-    userId: number;
+    telegramId: number;
     message: string;
 }
 

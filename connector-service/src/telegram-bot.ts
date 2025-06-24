@@ -27,7 +27,7 @@ class TelegramBot {
 
     async processMessage(from: User, message: string) {
         const res = await BotService.sendExpense({
-            userId: from.id,
+            telegramId: from.id,
             message: message,
         });
 
