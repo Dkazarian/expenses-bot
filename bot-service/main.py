@@ -1,28 +1,18 @@
+import config
 from fastapi import Body, Depends, FastAPI, Header, HTTPException
 from typing import Annotated, Optional
-from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-import os
-
-load_dotenv()
-API_KEY = os.getenv("BOT_SERVICE_API_KEY")
-if not API_KEY:
-    raise ValueError("Missing BOT_SERVICE_API_KEY in environment")
+from sqlalchemy.ext.asyncio import AsyncSession
+from database import get_db
+from database.models import UserModel as User
 
 app = FastAPI()
-
-def verify_api_key(
-    x_api_key: Annotated[str, Header(..., description="API key for authentication")]
-) -> str:
-    if x_api_key != API_KEY:
-        raise HTTPException(status_code=403, detail="Invalid API Key")
-    return x_api_key
 
 class Message(BaseModel):
     """
     A message that contains the expense to be recorded. 
     """
-    userId: int = Field(..., description="Telegram username", example="user_123")
+    telegramId: int = Field(..., description="Telegram username", example="user_123")
     message: str = Field(..., max_length=1000, description="Content of the message", example="Hello world!")
 
 class Expense(BaseModel):
@@ -32,6 +22,13 @@ class Expense(BaseModel):
     category: str = Field(..., description="Category of the expense", example="Food")
     description: str = Field(..., description="Description of the expense", example="Pizza")
     amount: float = Field(..., description="Amount of the expense", example=20.0)
+
+def verify_api_key(
+    x_api_key: Annotated[str, Header(..., description="API key for authentication")]
+) -> str:
+    if x_api_key != config.get("API_KEY"):
+        raise HTTPException(status_code=403, detail="Invalid API Key")
+    return x_api_key
 
 @app.post(
     "/expenses", 
@@ -61,15 +58,23 @@ class Expense(BaseModel):
         }
     }
 )
-async def expenses(message: Annotated[Message, Body()]) -> Optional[Expense]:
-    print(f"Received message from user {message.userId}: {message.message}")
+
+async def expenses(message: Annotated[Message, Body()], db: AsyncSession = Depends(get_db(config.get("DATABASE_URL")))) -> Optional[Expense]:
     """
     Searches for an expense in the message. If found it returns it and returns its category.
     """
+    print(f"Received message from user {message.telegramId}: {message.message}")
+    user = await User.get_by_telegram_id(db, message.telegramId)
+    if not user:
+        raise HTTPException(status_code=403, detail="User not found")
+
     if "pizza" in message.message.lower():
-        return Expense(
+        expense_data = Expense(
             category="Food",
             description="Pizza",
             amount=20.0
         )
+
+        await user.add_expense(db, expense_data.dict())
+        return expense_data
     return None
