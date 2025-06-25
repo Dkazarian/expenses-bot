@@ -11,7 +11,37 @@ describe('BotService', () => {
         jest.clearAllMocks();
     });
 
-    it('should request errors', async () => {
+    it('should return the expense', async () => {
+        const mockResponse = {
+            data: {
+                category: 'Food',
+                description: 'Pizza',
+                amount: 20,
+            },
+        };
+        mockedAxios.post.mockResolvedValue(mockResponse);
+
+        const result = await BotService.sendExpense({ telegramId: 123, message: 'Pizza 20 bucks' });
+
+        expect(result).toEqual({
+            category: 'Food',
+            description: 'Pizza',
+            amount: 20,
+        });
+
+        expect(mockedAxios.post).toHaveBeenCalledWith(
+            expect.stringContaining('/expenses'),
+            { telegramId: 123, message: 'Pizza 20 bucks' },
+            expect.objectContaining({
+                headers: expect.objectContaining({
+                    'X-API-Key': expect.any(String),
+                    'Content-Type': 'application/json',
+                }),
+            })
+        );
+    });
+
+    it('should handle errors', async () => {
         const mockError = {
             response: {
             data: { message: 'Something went wrong' },

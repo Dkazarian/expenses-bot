@@ -6,11 +6,16 @@ class TelegramBot {
     private bot: Bot;
     constructor(token: string) {
         this.bot = new Bot(token);
-        this.bot.on("message:text", async (ctx: Context) => {
-            if (ctx.hasCommand("start")) {
-                return ctx.reply("Hello! Use me to track your expenses 💸");
+        this.bot.on('message:text', async (ctx: Context) => {
+            if (ctx.hasCommand('start')) {
+                return ctx.reply('Hello! Use me to track your expenses 💸');
             }
-            if (!ctx.message || !ctx.from || !ctx.message.text) return;
+            if (
+                !ctx.message 
+                || !ctx.from
+                || !ctx.message.text
+                || ctx.message.text.startsWith('\\')
+            ) return;
 
             const result = await this.processMessage(ctx.from, ctx.message.text);
 
