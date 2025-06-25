@@ -1,27 +1,14 @@
 import config
 from fastapi import Body, Depends, FastAPI, Header, HTTPException
 from typing import Annotated, Optional
-from pydantic import BaseModel, Field
+from schema import Expense, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 from database.models import UserModel as User
+from helpers import contains_numbers_and_words
+from ia import extract_expense
 
 app = FastAPI()
-
-class Message(BaseModel):
-    """
-    A message that contains the expense to be recorded. 
-    """
-    telegramId: int = Field(..., description="Telegram username", example="user_123")
-    message: str = Field(..., max_length=1000, description="Content of the message", example="Hello world!")
-
-class Expense(BaseModel):
-    """
-    Recorded expense.
-    """
-    category: str = Field(..., description="Category of the expense", example="Food")
-    description: str = Field(..., description="Description of the expense", example="Pizza")
-    amount: float = Field(..., description="Amount of the expense", example=20.0)
 
 def verify_api_key(
     x_api_key: Annotated[str, Header(..., description="API key for authentication")]
@@ -65,16 +52,14 @@ async def expenses(message: Annotated[Message, Body()], db: AsyncSession = Depen
     """
     print(f"Received message from user {message.telegramId}: {message.message}")
     user = await User.get_by_telegram_id(db, message.telegramId)
+    
     if not user:
         raise HTTPException(status_code=403, detail="User not found")
-
-    if "pizza" in message.message.lower():
-        expense_data = Expense(
-            category="Food",
-            description="Pizza",
-            amount=20.0
-        )
-
-        await user.add_expense(db, expense_data.dict())
-        return expense_data
+    
+    text = message.message
+    if (contains_numbers_and_words(text)):
+        expense_data = extract_expense(text)
+        if (expense_data):
+            await user.add_expense(db, expense_data.dict())
+            return expense_data
     return None

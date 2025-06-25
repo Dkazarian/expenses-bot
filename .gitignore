@@ -6,3 +6,4 @@ npm-debug.log
 package-lock.json
 dist
 __pycache__
+.venv
