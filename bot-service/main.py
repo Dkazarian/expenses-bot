@@ -1,7 +1,7 @@
 import config
 from fastapi import Body, Depends, FastAPI, Header, HTTPException
 from typing import Annotated, Optional
-from schema import Expense, Message
+from schema import Expense, TelegramMessage
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 from database.models import UserModel as User
@@ -17,6 +17,8 @@ def verify_api_key(
         raise HTTPException(status_code=403, detail="Invalid API Key")
     return x_api_key
 
+# In a real case scenario we might want to add a rate limiter
+# (https://pypi.org/project/slowapi) and token limits to avoid abuse.
 @app.post(
     "/expenses", 
     dependencies=[Depends(verify_api_key)],
@@ -46,17 +48,18 @@ def verify_api_key(
     }
 )
 
-async def expenses(message: Annotated[Message, Body()], db: AsyncSession = Depends(get_db(config.get("DATABASE_URL")))) -> Optional[Expense]:
+async def expenses(message: Annotated[TelegramMessage, Body()], db: AsyncSession = Depends(get_db(config.get("DATABASE_URL")))) -> Optional[Expense]:
     """
     Searches for an expense in the message. If found it returns it and returns its category.
     """
-    print(f"Received message from user {message.telegramId}: {message.message}")
     user = await User.get_by_telegram_id(db, message.telegramId)
     
     if not user:
         raise HTTPException(status_code=403, detail="User not found")
     
     text = message.message
+    # Don't waste tokens in messages that can't contain expenses (an expense has a cost and a description)
+    # Note: You may want to modify this if you want to support numbers expressed in words.
     if (contains_numbers_and_words(text)):
         expense_data = extract_expense(text)
         if (expense_data):

@@ -22,9 +22,9 @@ class Expense(BaseModel):
     description: str = Field(..., description="Name of the object/service paid", example="Pizza")
     amount: float = Field(..., description="Amount of the expense", example=20.0)
 
-class Message(BaseModel):
+class TelegramMessage(BaseModel):
     """
     A message that contains the expense to be recorded. 
     """
-    telegramId: int = Field(..., description="Telegram username", example="user_123")
-    message: str = Field(..., max_length=1000, description="Content of the message", example="Hello world!")
+    telegramId: int = Field(..., description="Telegram username", example=123456)
+    message: str = Field(..., max_length=1000, description="Content of the message", example="Pizza 20 bucks")

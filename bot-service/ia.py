@@ -35,6 +35,15 @@ def extract_expense(message: str) -> Optional[Expense]:
         if not result.tool_calls:
             return None
         expense_data = result.tool_calls[0]['args']
+        # This is a patch for a known bug in which chatgpt still returns
+        # an expense with the cost 0 if it was not found. I was not able to
+        # fix it despite trying different prompts. 
+        #
+        # For instance:
+        # "I bought dog food on Dec 4" returns a "Dog food" expense with $0 
+        #
+        # There is also another bug in which it makes up the price:
+        # "I broke my leg 3 days ago" returns an expense of $200 in ER.
         if (expense_data["amount"] > 0):
             return Expense(**expense_data)
         return None
