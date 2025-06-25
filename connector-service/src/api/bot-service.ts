@@ -1,4 +1,4 @@
-import axios, { AxiosError, isAxiosError } from 'axios';
+import axios, { isAxiosError } from 'axios';
 import dotenv from 'dotenv';
 import { config } from '../config.js';
 

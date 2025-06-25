@@ -3,8 +3,6 @@
   "version": "1.0.0",
   "main": "dist/app.js",
   "scripts": {
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
     "start": "tsc && node dist/app.js",
     "lint": "eslint . --ext .ts",
     "test": "jest"

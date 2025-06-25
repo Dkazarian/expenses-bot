@@ -23,7 +23,7 @@ describe('BotService', () => {
         };
         mockedAxios.post.mockRejectedValue(mockError);
 
-        await BotService.sendExpense({ userId: 123, message: 'Test' });
+        await BotService.sendExpense({ telegramId: 123, message: 'Test' });
 
         expect(consoleSpy).toHaveBeenCalledWith('Error', mockError);
     });

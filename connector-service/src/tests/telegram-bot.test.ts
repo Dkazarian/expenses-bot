@@ -31,7 +31,7 @@ describe('TelegramBot', () => {
     expect(result).toBe('Food expense added ✅');
 
     expect(BotService.sendExpense).toHaveBeenCalledWith({
-      userId: 123,
+      telegramId: 123,
       message: 'Pizza 30 bucks',
     });
   });
