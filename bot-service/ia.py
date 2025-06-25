@@ -31,7 +31,7 @@ def extract_expense(message: str) -> Optional[Expense]:
 
 
     try:
-        result = structured_llm.invoke(message)
+        result = structured_llm.invoke(messages)
         if not result.tool_calls:
             return None
         expense_data = result.tool_calls[0]['args']
@@ -41,9 +41,6 @@ def extract_expense(message: str) -> Optional[Expense]:
         #
         # For instance:
         # "I bought dog food on Dec 4" returns a "Dog food" expense with $0 
-        #
-        # There is also another bug in which it makes up the price:
-        # "I broke my leg 3 days ago" returns an expense of $200 in ER.
         if (expense_data["amount"] > 0):
             return Expense(**expense_data)
         return None
