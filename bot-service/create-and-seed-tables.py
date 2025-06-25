@@ -5,12 +5,12 @@ from sqlalchemy.orm import sessionmaker
 
 from database.models import Base, UserModel as User
 
-
 engine = create_async_engine(config.get('DATABASE_URL'), echo=True, future=True)
 AsyncSessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
-async def create_tables():
+async def reset_tables():
     async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
 async def seed_data():
@@ -23,7 +23,7 @@ async def seed_data():
                     print(f"Created user: {user.telegram_id}")
 
 async def main():
-    await create_tables()
+    await reset_tables()
     await seed_data()
 
 if __name__ == "__main__":
