@@ -21,16 +21,22 @@ Why FastAPI? it requires minimal setup, handles concurrent requests, and automat
    
 ### Setup
 1. Install the lastest version of Python (https://www.python.org/downloads)
-2. Create and start a virtual env:
+2. Install python venv
+   ```
+   sudo apt-get update
+   sudo apt-get install libpython3-dev
+   sudo apt-get install python3-venv
+   ```
+4. Create and start a virtual env:
    ```
    python3 -m venv .venv
    source .venv/bin/activate
    ```
-3. Install the depencencies using the `requirements.txt` file.
+5. Install the depencencies using the `requirements.txt` file.
    ```
    pip install -r requirements.txt
    ```
-4. Setup the environment variables. This can be done by setting them manually in the console.
+6. Setup the environment variables. This can be done by setting them manually in the console.
     ```
     export API_KEY="value-of-your-choice"
     export OPENAI_API_KEY="key-provided-by-open-ai-or-me"
@@ -48,9 +54,9 @@ Why FastAPI? it requires minimal setup, handles concurrent requests, and automat
     ```
 
     (The `+asyncpg` is necessary for this to work.)
-5. Get your Telegram Id by messaging the bot *@userinfobot* or follow this link https://t.me/userinfobot and press Start or send `\start`.
+7. Get your Telegram Id by messaging the bot *@userinfobot* or follow this link https://t.me/userinfobot and press Start or send `\start`.
    
-6. Setup the database, either by creating the tables manually or running the `create-and-seed-tables.py` script.
+8. Setup the database, either by creating the tables manually or running the `create-and-seed-tables.py` script.
 
     ```
     python create-and-seed-tables.py
@@ -73,13 +79,13 @@ Why FastAPI? it requires minimal setup, handles concurrent requests, and automat
     );
     ```
 
-7. Run the server   
+9. Run the server   
 
     ```
     uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
     ```
     *(This values can be changed)*
-8. You should see this
+10. You should see this
     ```
     INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
     INFO:     Started parent process [6466]
@@ -87,7 +93,7 @@ Why FastAPI? it requires minimal setup, handles concurrent requests, and automat
     INFO:     Waiting for application startup.
     INFO:     Application startup complete.
     ```
-9.  That's it, your service is up!
+11.  That's it, your service is up!
 
 ## Documentation
 
